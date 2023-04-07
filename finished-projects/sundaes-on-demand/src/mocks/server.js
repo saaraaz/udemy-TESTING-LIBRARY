@@ -5,7 +5,7 @@ import { handlers } from "./handlers";
 export const server = setupServer(...handlers);
 
 /*
-    next step (final): configure create-react app, 
+    next step (final- one time thing): configure create-react app, 
     so that MSW will intercept(stop) the network requests,
     and return the responces that we stablished in our handlers.
 

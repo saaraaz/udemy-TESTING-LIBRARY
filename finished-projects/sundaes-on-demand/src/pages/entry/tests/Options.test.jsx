@@ -21,3 +21,20 @@ test("displays image for each scoop option from server", async () => {
   //for arrays and obects we use "toEqual" instead of "toBe"
   expect(altText).toEqual(["Chocolate scoop", "Vanilla scoop"]);
 });
+
+test("displays image for each topping option from server", async () => {
+  render(<Options optionType="toppings" />);
+
+  //test to see if it finds images:
+  const toppingImages = await screen.findAllByRole("img", {
+    name: /topping$/i,
+  });
+  expect(toppingImages).toHaveLength(3);
+
+  const altText = toppingImages.map((el) => el.alt);
+  expect(altText).toEqual([
+    "Cherries topping",
+    "M&Ms topping",
+    "Hot fudge topping",
+  ]);
+});

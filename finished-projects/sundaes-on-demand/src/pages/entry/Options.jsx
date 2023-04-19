@@ -4,12 +4,18 @@ import ScoopOption from "./ScoopOption";
 import ToppingOption from "./ToppingOption";
 import Row from "react-bootstrap/Row";
 import AlertBanner from "../common/AlertBanner";
+import { pricePerOption } from "../../constants";
+import { formatCurrency } from "../../utilities";
+import { useOrderDetails } from "../../contexts/OrderDetails";
 
 export default function Options({ optionType }) {
   //the optionType will be either 'scoop' or 'toppings'
 
   const [items, setItems] = useState([]);
   const [error, setError] = useState(false);
+  const { totals } = useOrderDetails();
+  //^^^ we used one of our 'getters' from the 'contex' file here,
+  //* in the next step: we use one of our 'setters' in the ScoopOption.jsx
 
   useEffect(() => {
     axios
@@ -24,6 +30,7 @@ export default function Options({ optionType }) {
   }
 
   const ItemComponent = optionType === "scoops" ? ScoopOption : ToppingOption;
+  const title = optionType[0].toUpperCase() + optionType.slice(1); //e.g. "Scoops"
 
   const optionItem = items.map((item) => (
     <ItemComponent
@@ -33,7 +40,16 @@ export default function Options({ optionType }) {
     />
   ));
 
-  return <Row>{optionItem}</Row>;
+  return (
+    <>
+      <h2>{title}</h2>
+      <p>{formatCurrency(pricePerOption[optionType])} each</p>
+      <p>
+        {title} total: {formatCurrency(totals[optionType])}
+      </p>
+      <Row>{optionItem}</Row>
+    </>
+  );
 }
 
 /*

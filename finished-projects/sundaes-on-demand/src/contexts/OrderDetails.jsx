@@ -1,5 +1,5 @@
 /*
-these compnents will use this context: OrderEntry & OrderSummary
+these compnents will use this "context": OrderEntry & OrderSummary
 */
 
 import { createContext, useContext, useState } from "react";

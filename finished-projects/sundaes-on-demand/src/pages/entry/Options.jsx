@@ -14,14 +14,23 @@ export default function Options({ optionType }) {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(false);
   const { totals } = useOrderDetails();
-  //^^^ we used one of our 'getters' from the 'contex' file here,
+  //^^^ we used one of our 'getters' from the 'context' file here,
   //* in the next step: we use one of our 'setters' in the ScoopOption.jsx
 
   useEffect(() => {
+    const controller = new AbortController(); // it's a JS obj that we can attache to the network req to controll it!
+
     axios
-      .get(`http://localhost:3030/${optionType}`)
+      .get(`http://localhost:3030/${optionType}`, { signal: controller.signal }) // this is how we attach the controller (i.e. by passing and 'option' called 'signal to the API call)
       .then((responce) => setItems(responce.data))
-      .catch((error) => setError(true));
+      .catch((error) => {
+        if (error.name !== "Cancellederror") setError(true);
+      }); //make sure 'error' is not set when we have a cancelld call
+
+    // cleanup func- which runs on copmonent unmount (e.g. here, it aborts axios call on compo unmount):
+    return () => {
+      controller.abort();
+    };
   }, [optionType]);
 
   // 3rd Step: modify error handling in Options compo:

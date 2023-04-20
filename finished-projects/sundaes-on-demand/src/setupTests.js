@@ -6,7 +6,7 @@ import "@testing-library/jest-dom";
 
 // src/setupTests.js
 import { server } from "./mocks/server.js";
-// Establish API mocking before all tests. (i.e. any network requsets that come thru, rout the to mock server instead of the real one)
+// Establish API mocking before all tests. (i.e. any network requsets that come thru, rout it to the mock server instead of the real one)
 beforeAll(() => server.listen());
 
 // Reset any request handlers that we may add during the tests,

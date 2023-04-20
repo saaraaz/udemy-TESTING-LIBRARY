@@ -13,7 +13,7 @@ export default function ScoopOption({ name, imagePath }) {
   }
   */
 
-  //1- getting a 'setter' we need form our 'context' file:
+  //1- getting a 'setter' we need, form our 'context' file:
   const { updateOptionCounts } = useOrderDetails();
   // 2- check the context file to see watch params you should pass into this setter
   // >>> updateOptionCounts(anOptionName, anOptionCount, anOptionType)

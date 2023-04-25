@@ -24,7 +24,7 @@ export default function Options({ optionType }) {
       .get(`http://localhost:3030/${optionType}`, { signal: controller.signal }) // this is how we attach the controller (i.e. by passing and 'option' called 'signal to the API call)
       .then((responce) => setItems(responce.data))
       .catch((error) => {
-        if (error.name !== "Cancellederror") setError(true);
+        if (error.name === "Cancellederror") setError(false);
       }); //make sure 'error' is not set when we have a cancelld call
 
     // cleanup func- which runs on copmonent unmount (e.g. here, it aborts axios call on compo unmount):

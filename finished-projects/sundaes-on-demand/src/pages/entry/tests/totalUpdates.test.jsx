@@ -1,3 +1,4 @@
+// This is a functional test!!!
 import { screen, render } from "../../../test-utils/TDL-utils";
 import userEvent from "@testing-library/user-event";
 import Options from "../Options";

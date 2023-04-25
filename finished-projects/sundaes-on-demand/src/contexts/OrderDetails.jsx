@@ -8,12 +8,12 @@ import { pricePerOption } from "../constants";
 //step1: create a context
 //-------------------------
 const OrderDetails = createContext(); // the value of this func is an obj, w/ the 'getters' & 'setters' for the internal state.
-// ^ but we leave the initial 'value' empty here, bc we want it to be 'undefine' if we're not inside a 'provider'
+// ^ but we leave the initial 'value' empty here, bc we want it to be 'undefined' if we're not inside a 'provider'
 
 //step2: create a custom hook
 //-----------------------------
 // this just checks to see if we're inside a 'provider' and just then will retun the 'context value'
-//(bc whenevr we are in a 'provider' we give it a 'value', so the value would NOT be 'undefined')
+//(bc whenever we are in a 'provider' we give it a 'value', so the value would NOT be 'undefined')
 export function useOrderDetails() {
   const contextValue = useContext(OrderDetails);
   //^ when we use useContext() on a 'context', it returns the 'value' for that 'context' based on the 'provider' that we're within.
@@ -46,19 +46,19 @@ export function OrderDetailsProvider(props) {
   });
   // ^^^ 'optionCounts' would be the 'getter'
 
-  // step4-2, create the 'setter'
+  // step4-2, create the 'setter':
   //-----------------------------
-  function updateOptionCounts(anOptionName, anOptionCount, anOptionType) {
-    //1- make a copy of current state:
-    const newOptionCounts = { ...optionCounts };
-
-    //2- update the copy w/ the new info recieved:
-    newOptionCounts[anOptionType][anOptionName] = anOptionCount;
-    //e.g. the customer adds a 'topping' called Gummy Bear:
-    // newOptionCounts[topping]["Gummy Bear"] = 1;
-
-    //3- update the 'state' w/ the new copy:
-    setOptionCounts(newOptionCounts);
+  function updateItemCount(itemName, newItemCount, optionType) {
+    // update the state with a copy of the previous state and new information
+    //e.g. updateItemCount("chocolate", 2, "scoops")
+    setOptionCounts((previousOptionCounts) => ({
+      ...previousOptionCounts,
+      [optionType]: {
+        ...previousOptionCounts[optionType],
+        [itemName]: newItemCount,
+      },
+    }));
+    console.log("new optionCounts From context file>>>", optionCounts); //one render behind
   }
 
   // step4-3, create other usefull functions that the global context may need
@@ -70,15 +70,15 @@ export function OrderDetailsProvider(props) {
   }
 
   //4-3-2- a utility function to get the current order 'total':
-  function calculateTotal(anOptionType) {
+  function calculateTotal(optionType) {
     //1- get an array of all the 'counts' of an obj (either a 'scoop' obj or a 'topping')
-    const countsArr = Object.values(optionCounts[anOptionType]); //e.g. for 'scoops' > [1,2]
+    const countsArr = Object.values(optionCounts[optionType]); //e.g. for 'scoops' > [1,2]
 
     //2- get the 'total' of the 'counts' of either the 'scoops' or the 'toppings'
     const totalCount = countsArr.reduce((total, curr) => total + curr, 0);
 
     //3- Multiply the 'total count' of either the 'scoops' or the 'toppings' by their 'price'
-    return totalCount * pricePerOption[anOptionType];
+    return totalCount * pricePerOption[optionType];
   }
 
   //4-3-3- get the 'totals' of the whole order:
@@ -90,7 +90,7 @@ export function OrderDetailsProvider(props) {
   // ^^^ and this is another 'getter'
 
   //----------------------------------------------------------------------------
-  const value = { optionCounts, totals, updateOptionCounts, resetOrder };
+  const value = { optionCounts, totals, updateItemCount, resetOrder };
   // ^^ the 'value' would be those 'getter & setters' (+ any data/functionality that we might pass along) that we'll create within this provider func here.
 
   return <OrderDetails.Provider value={value} {...props} />;

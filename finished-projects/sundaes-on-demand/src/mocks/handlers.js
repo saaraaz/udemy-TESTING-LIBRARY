@@ -7,6 +7,11 @@
 
 import { rest } from "msw";
 
+//to make a deliberate delay in a call to see the 'loading' status
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const handlers = [
   rest.get("http://localhost:3030/scoops", (req, res, ctx) => {
     return res(
@@ -25,8 +30,17 @@ export const handlers = [
       ])
     );
   }),
+
+  // ^^^ we make fake objects that matches the real responces
+
+  rest.post("http://localhost:3030/order", async (req, res, ctx) => {
+    // add a 100ms pause here to give jest a chance to see the "loading" state.
+    // See https://www.udemy.com/course/react-testing-library/learn/lecture/36703860
+
+    await sleep(100);
+    return res(ctx.json({ orderNumber: 123455676 }));
+  }),
 ];
-// ^^^ we make a fake objects that matches the real responces
 
 // * next step (it's a one time thing): integrate -> 2 ways: 1) browser 2) Node
 // * we use Node in this project => create the server.js file

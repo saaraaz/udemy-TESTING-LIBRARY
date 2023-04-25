@@ -1,25 +1,34 @@
-import React from "react";
+import { useState } from "react";
 import Col from "react-bootstrap/Col";
 import { useOrderDetails } from "../../contexts/OrderDetails";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
 export default function ScoopOption({ name, imagePath }) {
-  /*
-  sample option obj:
-  {
-  name: "Chocolate",
-  imagePath: "/images/chocolate.png"
-  }
-  */
-
   //1- getting a 'setter' we need, form our 'context' file:
-  const { updateOptionCounts } = useOrderDetails();
+  const { updateItemCount } = useOrderDetails();
   // 2- check the context file to see watch params you should pass into this setter
-  // >>> updateOptionCounts(anOptionName, anOptionCount, anOptionType)
-  const handleChange = (e) =>
-    updateOptionCounts(name, parseInt(e.target.value), "scoops");
-  // ^^ use parseInt() just to be sure the input is a number
+  // >>> updateItemCount(itemName, newItemCount, optionType)
+
+  //3- to make sure we get a correct number (bc user can put anything, negative, or 1.5 scoops, ...)
+  const [isValid, setIsValid] = useState(true);
+  const handleChange = (event) => {
+    const currentValue = event.target.value;
+
+    // make sure we're using a number and not a string to validate (bc spinbtn uses strings)
+    const currentValueFloat = parseFloat(currentValue);
+    const valueIsValid =
+      0 <= currentValueFloat &&
+      currentValueFloat <= 10 &&
+      Math.floor(currentValueFloat) === currentValueFloat;
+
+    // validate
+    setIsValid(valueIsValid);
+
+    // adjust scoop count with currentValue if it's valid; 0 if it's not
+    const newValue = valueIsValid ? parseInt(currentValue) : 0;
+    updateItemCount(name, newValue, "scoops");
+  };
 
   return (
     //if the screen is small, I want the image get the whole row!
@@ -44,9 +53,18 @@ export default function ScoopOption({ name, imagePath }) {
             type="number"
             defaultValue={0}
             onChange={handleChange}
+            isInvalid={!isValid}
           />
         </Col>
       </Form.Group>
     </Col>
   );
 }
+
+/*
+  sample option obj:
+  {
+  name: "Chocolate",
+  imagePath: "/images/chocolate.png"
+  }
+  */
